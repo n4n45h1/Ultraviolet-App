@@ -32,12 +32,13 @@
 
     <main class="main">
         <div class="search-container">
-            <form id="uv-form" class="search-form">
+            <form id="uv-form" class="search-form" action="javascript:void(0);">
                 <input
                     id="uv-address"
                     type="text"
                     placeholder="URLを入力またはキーワードで検索"
                     class="search-input"
+                    required
                 />
                 <select id="uv-search-engine" class="search-engine-select">
                     <option value="https://www.google.com/search?q=%s">Google</option>

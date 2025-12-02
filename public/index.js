@@ -41,8 +41,18 @@ async function openProxyUrl(url) {
 
 form.addEventListener("submit", async (event) => {
 	event.preventDefault();
-	const url = search(address.value, searchEngine.value);
-	await openProxyUrl(url);
+	
+	try {
+		const url = search(address.value, searchEngine.value);
+		console.log('Search URL:', url);
+		await openProxyUrl(url);
+	} catch (err) {
+		console.error('Error opening proxy:', err);
+		error.textContent = "プロキシの起動に失敗しました。";
+		errorCode.textContent = err.toString();
+	}
+	
+	return false;
 });
 
 function getBookmarks() {
