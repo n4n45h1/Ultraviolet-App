@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>クレジット | Sliply</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+        .credits-page {
+            min-height: 100vh;
+            padding: 2rem 0;
+        }
+        
+        .credits-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+        
+        .credits-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .credits-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+        
+        .credits-description {
+            font-size: 1.1rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+        
+        .credits-section {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 
+                0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 1rem;
+        }
+        
+        .credit-item {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .credit-item:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .credit-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 0.5rem;
+        }
+        
+        .credit-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 0.5rem;
+        }
+        
+        .credit-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .credit-link:hover {
+            text-decoration: underline;
+        }
+        
+        .license-section {
+            background: #f8fafc;
+            padding: 1.5rem;
+            border-radius: 12px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .license-text {
+            font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+            font-size: 0.9rem;
+            color: #475569;
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            margin-top: 2rem;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="credits-page">
+        <div class="credits-container">
+            <div class="credits-header">
+                <h1 class="credits-title">クレジット</h1>
+                <p class="credits-description">
+                    Sliplyの開発にご協力いただいたプロジェクトとライブラリに感謝いたします。
+                </p>
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">主要プロジェクト</h2>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">Ultraviolet</h3>
+                    <p class="credit-description">
+                        高度なプロキシ技術のベースとなっているプロジェクトです。Service Workersを活用した革新的なアプローチを提供しています。
+                    </p>
+                    <a href="https://github.com/titaniumnetwork-dev/Ultraviolet" class="credit-link">GitHub →</a>
+                </div>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">TitaniumNetwork</h3>
+                    <p class="credit-description">
+                        オープンなインターネットアクセスを提供するためのツールやサービスを開発している組織です。
+                    </p>
+                    <a href="https://github.com/titaniumnetwork-dev" class="credit-link">GitHub →</a>
+                </div>
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">使用技術・ライブラリ</h2>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">Fastify</h3>
+                    <p class="credit-description">
+                        高性能なNode.js Webフレームワークとして使用されています。
+                    </p>
+                    <a href="https://fastify.io/" class="credit-link">公式サイト →</a>
+                </div>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">EpoxyTransport</h3>
+                    <p class="credit-description">
+                        暗号化されたデータ転送を提供するHTTPトランスポートライブラリです。
+                    </p>
+                    <a href="https://github.com/MercuryWorkshop/EpoxyTransport" class="credit-link">GitHub →</a>
+                </div>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">Wisp Server</h3>
+                    <p class="credit-description">
+                        WebSocketベースの通信を提供するサーバー実装です。
+                    </p>
+                    <a href="https://github.com/MercuryWorkshop/wisp-server-node" class="credit-link">GitHub →</a>
+                </div>
+                
+                <div class="credit-item">
+                    <h3 class="credit-name">Google Fonts - Inter</h3>
+                    <p class="credit-description">
+                        モダンで読みやすいタイポグラフィを提供するフォントファミリーです。
+                    </p>
+                    <a href="https://fonts.google.com/specimen/Inter" class="credit-link">Google Fonts →</a>
+                </div>
+            </div>
+
+            <div class="credits-section">
+                <h2 class="section-title">ライセンス情報</h2>
+                <div class="license-section">
+                    <div class="license-text">このプロジェクトはGPL-3.0-or-laterライセンスの下で配布されています。
+
+詳細なライセンス条項については、プロジェクトのLICENSEファイルをご確認ください。
+
+オープンソースコミュニティの皆様のご協力に心より感謝いたします。</div>
+                </div>
+            </div>
+
+            <a href="/" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ホームに戻る
+            </a>
+        </div>
+    </div>
+</body>
+</html>

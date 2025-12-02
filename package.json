@@ -1,7 +1,7 @@
 {
-	"name": "uv-app",
+	"name": "sliply-app",
 	"version": "1.0.0",
-	"description": "Ultraviolet instance",
+	"description": "Sliply - 高度なウェブプロキシソリューション",
 	"type": "module",
 	"engines": {
 		"npm": ">=7.0.0",
@@ -14,7 +14,10 @@
 		"lint:fix": "eslint ./src/ --fix"
 	},
 	"keywords": [
-		"proxy"
+		"proxy",
+		"sliply",
+		"web-proxy",
+		"privacy"
 	],
 	"author": "",
 	"license": "GPL-3.0-or-later",

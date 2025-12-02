@@ -1,7 +1,7 @@
 {
-	"name": "Ultraviolet App",
-	"description": "Node.js Ultraviolet instance",
-	"repository": "https://github.com/titaniumnetwork-dev/Ultraviolet-App",
-	"logo": "https://raw.githubusercontent.com/titaniumnetwork-dev/Ultraviolet-Static/main/public/uv.png",
-	"keywords": ["tomp", "ultraviolet"]
+	"name": "Sliply App",
+	"description": "Sliply - 高度なウェブプロキシソリューション",
+	"repository": "https://github.com/n4n45h1/Sliply-App",
+	"logo": "https://raw.githubusercontent.com/n4n45h1/Sliply-App/main/public/favicon.ico",
+	"keywords": ["sliply", "proxy", "web-proxy", "privacy"]
 }

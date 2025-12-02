@@ -1,6 +1,8 @@
 import { createServer } from "node:http";
 import { join } from "node:path";
 import { hostname } from "node:os";
+import { fileURLToPath } from "node:url";
+import { dirname } from "node:path";
 import wisp from "wisp-server-node";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
@@ -10,6 +12,11 @@ import { publicPath } from "ultraviolet-static";
 import { uvPath } from "@titaniumnetwork-dev/ultraviolet";
 import { epoxyPath } from "@mercuryworkshop/epoxy-transport";
 import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
+
+// Get current file directory for custom static files
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const customPublicPath = join(__dirname, "..", "public");
 
 const fastify = Fastify({
 	serverFactory: (handler) => {
@@ -26,13 +33,26 @@ const fastify = Fastify({
 	},
 });
 
+// Register custom static files first (higher priority)
 fastify.register(fastifyStatic, {
-	root: publicPath,
+	root: customPublicPath,
 	decorateReply: true,
 });
 
+// Fallback to original ultraviolet static files
+fastify.register(fastifyStatic, {
+	root: publicPath,
+	prefix: "/fallback/",
+	decorateReply: false,
+});
+
 fastify.get("/uv/uv.config.js", (req, res) => {
-	return res.sendFile("uv/uv.config.js", publicPath);
+	// Try custom path first, then fallback
+	try {
+		return res.sendFile("uv/uv.config.js", customPublicPath);
+	} catch {
+		return res.sendFile("uv/uv.config.js", publicPath);
+	}
 });
 
 fastify.register(fastifyStatic, {
