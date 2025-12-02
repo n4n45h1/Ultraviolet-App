@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>設定 | Sliply</title>
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="settings.css" />
+</head>
+
+<body>
+    <header class="header">
+        <h1 class="logo">sliply</h1>
+    </header>
+
+    <main class="main settings-main">
+        <div class="settings-container">
+            <div class="settings-header">
+                <a href="/" class="back-button">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 12H5M12 19l-7-7 7-7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    戻る
+                </a>
+                <h2 class="settings-title">設定</h2>
+            </div>
+
+            <!-- サイト設定 -->
+            <section class="settings-section">
+                <h3 class="section-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                    サイト設定
+                </h3>
+                <p class="section-description">監視対策のため、サイトの外観をカスタマイズできます</p>
+
+                <div class="setting-item">
+                    <label for="site-title" class="setting-label">サイト名</label>
+                    <input 
+                        type="text" 
+                        id="site-title" 
+                        class="setting-input" 
+                        placeholder="例: Google"
+                    />
+                    <p class="setting-hint">ブラウザのタブに表示される名前を変更します</p>
+                </div>
+
+                <div class="setting-item">
+                    <label for="favicon-upload" class="setting-label">ファビコン</label>
+                    <div class="favicon-upload-area">
+                        <div class="favicon-preview">
+                            <img id="favicon-preview-img" src="favicon.ico" alt="Current favicon" />
+                        </div>
+                        <div class="favicon-upload-controls">
+                            <input 
+                                type="file" 
+                                id="favicon-upload" 
+                                accept="image/png,image/jpeg,image/x-icon,image/svg+xml"
+                                style="display: none;"
+                            />
+                            <button type="button" class="btn-upload" onclick="document.getElementById('favicon-upload').click()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                ファイルを選択
+                            </button>
+                            <button type="button" class="btn-reset" id="reset-favicon">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M3 12a9 9 0 009 9 9 9 0 006-2.3L21 21M3 3l2.7 3.3A9 9 0 0012 3a9 9 0 009 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                リセット
+                            </button>
+                        </div>
+                    </div>
+                    <p class="setting-hint">ブラウザのタブに表示されるアイコンを変更します（PNG, JPG, ICO, SVG対応）</p>
+                </div>
+
+                <button type="button" class="btn-save" id="save-site-settings">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="17 21 17 13 7 13 7 21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <polyline points="7 3 7 8 15 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    変更を保存
+                </button>
+            </section>
+
+            <!-- ブックマーク管理 -->
+            <section class="settings-section">
+                <h3 class="section-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    ブックマーク
+                </h3>
+                <p class="section-description">よく使うサイトをブックマークして素早くアクセス</p>
+
+                <div class="bookmarks-list" id="bookmarks-list">
+                    <!-- ブックマークがここに表示されます -->
+                </div>
+
+                <div class="add-bookmark-form">
+                    <h4 class="form-title">新しいブックマークを追加</h4>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bookmark-name">名前</label>
+                            <input 
+                                type="text" 
+                                id="bookmark-name" 
+                                class="setting-input" 
+                                placeholder="例: YouTube"
+                            />
+                        </div>
+                        <div class="form-group">
+                            <label for="bookmark-url">URL</label>
+                            <input 
+                                type="text" 
+                                id="bookmark-url" 
+                                class="setting-input" 
+                                placeholder="https://www.youtube.com"
+                            />
+                        </div>
+                    </div>
+                    <button type="button" class="btn-add" id="add-bookmark">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" y1="5" x2="12" y2="19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            <line x1="5" y1="12" x2="19" y2="12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        </svg>
+                        ブックマークを追加
+                    </button>
+                </div>
+            </section>
+
+            <!-- リセット -->
+            <section class="settings-section danger-section">
+                <h3 class="section-title">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <line x1="12" y1="9" x2="12" y2="13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    リセット
+                </h3>
+                <p class="section-description">すべての設定を初期状態に戻します</p>
+                <button type="button" class="btn-danger" id="reset-all">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <polyline points="3 6 5 6 21 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    すべての設定をリセット
+                </button>
+            </section>
+        </div>
+    </main>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="settings.js"></script>
+</body>
+</html>
