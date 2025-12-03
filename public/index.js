@@ -3,46 +3,72 @@
 let connection;
 
 async function initConnection() {
-	if (!connection && typeof BareMux !== 'undefined') {
-		try {
-			connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-		} catch (err) {
-			console.error('Failed to initialize BareMux connection:', err);
-			throw err;
-		}
+	if (connection) return connection;
+	
+	if (typeof BareMux === 'undefined') {
+		console.warn('BareMux is not loaded');
+		return null;
 	}
+	
+	if (typeof BroadcastChannel === 'undefined') {
+		console.warn('BroadcastChannel API not available. BareMux requires HTTPS or localhost.');
+		return null;
+	}
+	
+	try {
+		connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+		console.log('BareMux connection initialized');
+	} catch (err) {
+		console.error('Failed to initialize BareMux connection:', err);
+		console.error('Error details:', err.message);
+		connection = null;
+	}
+	
 	return connection;
 }
 
 async function openProxyUrl(url) {
-	await initConnection();
-	
 	const error = document.getElementById("uv-error");
 	const errorCode = document.getElementById("uv-error-code");
 	
 	try {
 		await registerSW();
 	} catch (err) {
-		error.textContent = "Failed to register service worker.";
-		errorCode.textContent = err.toString();
-		throw err;
+		if (error) {
+			error.textContent = "Service Workerの登録に失敗しました。";
+			errorCode.textContent = err.toString();
+		}
+		console.error('Service Worker registration failed:', err);
+		return;
 	}
 
 	const frame = document.getElementById("uv-frame");
-	frame.style.display = "block";
 	const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
 	
-	if (connection) {
+	const conn = await initConnection();
+	if (conn) {
 		try {
-			if (await connection.getTransport() !== "/epoxy/index.mjs") {
-				await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+			const currentTransport = await conn.getTransport();
+			if (currentTransport !== "/epoxy/index.mjs") {
+				await conn.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
 			}
 		} catch (err) {
-			console.error('Transport setup failed:', err);
+			console.warn('Transport setup failed, continuing anyway:', err);
 		}
+	} else {
+		console.warn('BareMux not available, proxy may not work correctly');
 	}
 	
-	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+	try {
+		frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
+		frame.style.display = "block";
+	} catch (err) {
+		if (error) {
+			error.textContent = "URLのエンコードに失敗しました。";
+			errorCode.textContent = err.toString();
+		}
+		console.error('URL encoding failed:', err);
+	}
 }
 
 function getBookmarks() {
@@ -190,27 +216,38 @@ function setupEventListeners() {
 	});
 }
 
-if (typeof BareMux === 'undefined') {
-	console.warn('BareMux not loaded yet, waiting...');
-	let attempts = 0;
-	const checkBareMux = setInterval(() => {
-		attempts++;
-		if (typeof BareMux !== 'undefined') {
-			clearInterval(checkBareMux);
-			console.log('BareMux loaded successfully');
-			setupEventListeners();
-			applySettings();
-			loadQuickLinks();
-		} else if (attempts > 50) {
-			clearInterval(checkBareMux);
-			console.error('BareMux failed to load after 5 seconds');
-			setupEventListeners();
-			applySettings();
-			loadQuickLinks();
-		}
-	}, 100);
-} else {
+function initApp() {
+	console.log('Initializing app...');
+	console.log('BareMux available:', typeof BareMux !== 'undefined');
+	console.log('Ultraviolet available:', typeof Ultraviolet !== 'undefined');
+	console.log('__uv$config available:', typeof __uv$config !== 'undefined');
+	
 	setupEventListeners();
 	applySettings();
 	loadQuickLinks();
 }
+
+let initAttempts = 0;
+const maxAttempts = 30;
+
+function checkDependencies() {
+	initAttempts++;
+	
+	const bareMuxLoaded = typeof BareMux !== 'undefined';
+	const uvConfigLoaded = typeof __uv$config !== 'undefined';
+	
+	if (bareMuxLoaded && uvConfigLoaded) {
+		console.log('All dependencies loaded');
+		initApp();
+	} else if (initAttempts < maxAttempts) {
+		console.log(`Waiting for dependencies... (${initAttempts}/${maxAttempts})`);
+		if (!bareMuxLoaded) console.log('  - BareMux not loaded');
+		if (!uvConfigLoaded) console.log('  - UV Config not loaded');
+		setTimeout(checkDependencies, 100);
+	} else {
+		console.warn('Some dependencies failed to load, initializing anyway');
+		initApp();
+	}
+}
+
+checkDependencies();

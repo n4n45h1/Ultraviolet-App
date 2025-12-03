@@ -71,17 +71,12 @@
 
     <iframe style="display: none;" id="uv-frame"></iframe>
     
-    <script>
-        window.addEventListener('error', function(e) {
-            console.error('Script error:', e.filename, e.message);
-        });
-    </script>
     <script src="search.js"></script>
     <script src="register-sw.js"></script>
-    <script src="uv/uv.config.js"></script>
     <script src="uv/uv.bundle.js"></script>
+    <script src="uv/uv.config.js"></script>
     <script src="epoxy/index.js"></script>
-    <script src="baremux/index.js" onerror="console.error('Failed to load baremux')"></script>
+    <script src="baremux/index.js"></script>
     <script src="index.js"></script>
 </body>
 </html>

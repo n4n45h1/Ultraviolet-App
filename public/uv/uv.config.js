@@ -2,8 +2,18 @@
 
 self.__uv$config = {
   prefix: "/uv/service/",
-  encodeUrl: Ultraviolet.codec.xor.encode,
-  decodeUrl: Ultraviolet.codec.xor.decode,
+  encodeUrl: function(str) {
+    if (typeof Ultraviolet !== 'undefined' && Ultraviolet.codec && Ultraviolet.codec.xor) {
+      return Ultraviolet.codec.xor.encode(str);
+    }
+    return str;
+  },
+  decodeUrl: function(str) {
+    if (typeof Ultraviolet !== 'undefined' && Ultraviolet.codec && Ultraviolet.codec.xor) {
+      return Ultraviolet.codec.xor.decode(str);
+    }
+    return str;
+  },
   handler: "/uv/uv.handler.js",
   client: "/uv/uv.client.js",
   bundle: "/uv/uv.bundle.js",
