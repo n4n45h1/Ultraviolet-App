@@ -1,8 +1,22 @@
 "use strict";
 
-const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+let connection;
+
+async function initConnection() {
+	if (!connection && typeof BareMux !== 'undefined') {
+		try {
+			connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+		} catch (err) {
+			console.error('Failed to initialize BareMux connection:', err);
+			throw err;
+		}
+	}
+	return connection;
+}
 
 async function openProxyUrl(url) {
+	await initConnection();
+	
 	const error = document.getElementById("uv-error");
 	const errorCode = document.getElementById("uv-error-code");
 	
@@ -18,8 +32,14 @@ async function openProxyUrl(url) {
 	frame.style.display = "block";
 	const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
 	
-	if (await connection.getTransport() !== "/epoxy/index.mjs") {
-		await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+	if (connection) {
+		try {
+			if (await connection.getTransport() !== "/epoxy/index.mjs") {
+				await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
+			}
+		} catch (err) {
+			console.error('Transport setup failed:', err);
+		}
 	}
 	
 	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
