@@ -1,59 +1,63 @@
 "use strict";
-/**
- * @type {HTMLFormElement}
- */
-const form = document.getElementById("uv-form");
-/**
- * @type {HTMLInputElement}
- */
-const address = document.getElementById("uv-address");
-/**
- * @type {HTMLInputElement}
- */
-const searchEngine = document.getElementById("uv-search-engine");
-/**
- * @type {HTMLParagraphElement}
- */
-const error = document.getElementById("uv-error");
-/**
- * @type {HTMLPreElement}
- */
-const errorCode = document.getElementById("uv-error-code");
-const connection = new BareMux.BareMuxConnection("/baremux/worker.js")
+
+let form, address, searchEngine, error, errorCode, connection;
+
+function initializeElements() {
+	form = document.getElementById("uv-form");
+	address = document.getElementById("uv-address");
+	searchEngine = document.getElementById("uv-search-engine");
+	error = document.getElementById("uv-error");
+	errorCode = document.getElementById("uv-error-code");
+	
+	if (typeof BareMux !== 'undefined') {
+		connection = new BareMux.BareMuxConnection("/baremux/worker.js");
+	}
+}
 
 async function openProxyUrl(url) {
 	try {
 		await registerSW();
 	} catch (err) {
-		error.textContent = "Failed to register service worker.";
-		errorCode.textContent = err.toString();
+		if (error) {
+			error.textContent = "Failed to register service worker.";
+			errorCode.textContent = err.toString();
+		}
 		throw err;
 	}
 
 	let frame = document.getElementById("uv-frame");
 	frame.style.display = "block";
 	let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-	if (await connection.getTransport() !== "/epoxy/index.mjs") {
+	if (connection && await connection.getTransport() !== "/epoxy/index.mjs") {
 		await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
 	}
 	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
 }
 
-form.addEventListener("submit", async (event) => {
-	event.preventDefault();
+function setupFormHandler() {
+	if (!form) return;
 	
-	try {
-		const url = search(address.value, searchEngine.value);
-		console.log('Search URL:', url);
-		await openProxyUrl(url);
-	} catch (err) {
-		console.error('Error opening proxy:', err);
-		error.textContent = "プロキシの起動に失敗しました。";
-		errorCode.textContent = err.toString();
-	}
-	
-	return false;
-});
+	form.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		
+		try {
+			if (typeof search !== 'function') {
+				throw new Error('Search function not loaded');
+			}
+			const url = search(address.value, searchEngine.value);
+			console.log('Search URL:', url);
+			await openProxyUrl(url);
+		} catch (err) {
+			console.error('Error opening proxy:', err);
+			if (error) {
+				error.textContent = "プロキシの起動に失敗しました。";
+				errorCode.textContent = err.toString();
+			}
+		}
+		
+		return false;
+	});
+}
 
 function getBookmarks() {
 	const bookmarks = localStorage.getItem('sliply_bookmarks');
@@ -108,30 +112,43 @@ function getIconForUrl(url) {
 }
 
 function loadQuickLinks() {
-	const bookmarks = getBookmarks();
-	const quickLinksContainer = document.getElementById('quick-links');
-	
-	if (bookmarks.length === 0) {
-		quickLinksContainer.innerHTML = '';
-		return;
-	}
-	
-	quickLinksContainer.innerHTML = bookmarks.map(bookmark => `
-		<a href="#" class="quick-link" data-url="${bookmark.url}" title="${bookmark.name}">
-			${getIconForUrl(bookmark.url)}
-			<span>${bookmark.name}</span>
-		</a>
-	`).join('');
-	
-	document.querySelectorAll('.quick-link').forEach(link => {
-		link.addEventListener('click', async (event) => {
-			event.preventDefault();
-			const url = event.currentTarget.getAttribute('data-url');
-			if (url) {
-				await openProxyUrl(url);
-			}
+	try {
+		const bookmarks = getBookmarks();
+		const quickLinksContainer = document.getElementById('quick-links');
+		
+		if (!quickLinksContainer) {
+			console.error('Quick links container not found');
+			return;
+		}
+		
+		if (!bookmarks || bookmarks.length === 0) {
+			quickLinksContainer.innerHTML = '';
+			return;
+		}
+		
+		quickLinksContainer.innerHTML = bookmarks.map(bookmark => `
+			<a href="#" class="quick-link" data-url="${bookmark.url}" title="${bookmark.name}">
+				${getIconForUrl(bookmark.url)}
+				<span>${bookmark.name}</span>
+			</a>
+		`).join('');
+		
+		document.querySelectorAll('.quick-link').forEach(link => {
+			link.addEventListener('click', async (event) => {
+				event.preventDefault();
+				const url = event.currentTarget.getAttribute('data-url');
+				if (url) {
+					try {
+						await openProxyUrl(url);
+					} catch (err) {
+						console.error('Error opening bookmark:', err);
+					}
+				}
+			});
 		});
-	});
+	} catch (err) {
+		console.error('Error loading quick links:', err);
+	}
 }
 
 function applySettings() {
@@ -161,5 +178,15 @@ window.addEventListener('storage', (e) => {
 	}
 });
 
-applySettings();
-loadQuickLinks();
+function initialize() {
+	initializeElements();
+	setupFormHandler();
+	applySettings();
+	loadQuickLinks();
+}
+
+if (document.readyState === 'loading') {
+	document.addEventListener('DOMContentLoaded', initialize);
+} else {
+	initialize();
+}
