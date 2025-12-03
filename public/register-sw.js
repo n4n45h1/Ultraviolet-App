@@ -15,15 +15,23 @@ const swAllowedHostnames = ["localhost", "127.0.0.1"];
  */
 async function registerSW() {
   if (!navigator.serviceWorker) {
-    if (
-      location.protocol !== "https:" &&
-      !swAllowedHostnames.includes(location.hostname) &&
-      !location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)
-    )
-      throw new Error("Service workers cannot be registered without https.");
-
     throw new Error("Your browser doesn't support service workers.");
   }
 
-  await navigator.serviceWorker.register(stockSW);
+  if (
+    location.protocol !== "https:" &&
+    !swAllowedHostnames.includes(location.hostname) &&
+    !location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)
+  ) {
+    throw new Error("Service workers cannot be registered without https. Use localhost or an IP address.");
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.register(stockSW);
+    console.log('Service Worker registered successfully:', registration);
+    return registration;
+  } catch (err) {
+    console.error('Service Worker registration failed:', err);
+    throw err;
+  }
 }
