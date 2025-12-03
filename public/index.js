@@ -1,62 +1,28 @@
 "use strict";
 
-let form, address, searchEngine, error, errorCode, connection;
-
-function initializeElements() {
-	form = document.getElementById("uv-form");
-	address = document.getElementById("uv-address");
-	searchEngine = document.getElementById("uv-search-engine");
-	error = document.getElementById("uv-error");
-	errorCode = document.getElementById("uv-error-code");
-	
-	if (typeof BareMux !== 'undefined') {
-		connection = new BareMux.BareMuxConnection("/baremux/worker.js");
-	}
-}
+const connection = new BareMux.BareMuxConnection("/baremux/worker.js");
 
 async function openProxyUrl(url) {
+	const error = document.getElementById("uv-error");
+	const errorCode = document.getElementById("uv-error-code");
+	
 	try {
 		await registerSW();
 	} catch (err) {
-		if (error) {
-			error.textContent = "Failed to register service worker.";
-			errorCode.textContent = err.toString();
-		}
+		error.textContent = "Failed to register service worker.";
+		errorCode.textContent = err.toString();
 		throw err;
 	}
 
-	let frame = document.getElementById("uv-frame");
+	const frame = document.getElementById("uv-frame");
 	frame.style.display = "block";
-	let wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
-	if (connection && await connection.getTransport() !== "/epoxy/index.mjs") {
+	const wispUrl = (location.protocol === "https:" ? "wss" : "ws") + "://" + location.host + "/wisp/";
+	
+	if (await connection.getTransport() !== "/epoxy/index.mjs") {
 		await connection.setTransport("/epoxy/index.mjs", [{ wisp: wispUrl }]);
 	}
-	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
-}
-
-function setupFormHandler() {
-	if (!form) return;
 	
-	form.addEventListener("submit", async (event) => {
-		event.preventDefault();
-		
-		try {
-			if (typeof search !== 'function') {
-				throw new Error('Search function not loaded');
-			}
-			const url = search(address.value, searchEngine.value);
-			console.log('Search URL:', url);
-			await openProxyUrl(url);
-		} catch (err) {
-			console.error('Error opening proxy:', err);
-			if (error) {
-				error.textContent = "プロキシの起動に失敗しました。";
-				errorCode.textContent = err.toString();
-			}
-		}
-		
-		return false;
-	});
+	frame.src = __uv$config.prefix + __uv$config.encodeUrl(url);
 }
 
 function getBookmarks() {
@@ -169,6 +135,28 @@ function applySettings() {
 	}
 }
 
+const form = document.getElementById("uv-form");
+const address = document.getElementById("uv-address");
+const searchEngine = document.getElementById("uv-search-engine");
+
+form.addEventListener("submit", async (event) => {
+	event.preventDefault();
+	
+	const error = document.getElementById("uv-error");
+	const errorCode = document.getElementById("uv-error-code");
+	
+	try {
+		const url = search(address.value, searchEngine.value);
+		await openProxyUrl(url);
+	} catch (err) {
+		console.error('Error:', err);
+		error.textContent = "エラーが発生しました。";
+		errorCode.textContent = err.toString();
+	}
+	
+	return false;
+});
+
 window.addEventListener('storage', (e) => {
 	if (e.key === 'sliply_title_update' || e.key === 'sliply_favicon_update') {
 		applySettings();
@@ -178,15 +166,5 @@ window.addEventListener('storage', (e) => {
 	}
 });
 
-function initialize() {
-	initializeElements();
-	setupFormHandler();
-	applySettings();
-	loadQuickLinks();
-}
-
-if (document.readyState === 'loading') {
-	document.addEventListener('DOMContentLoaded', initialize);
-} else {
-	initialize();
-}
+applySettings();
+loadQuickLinks();
