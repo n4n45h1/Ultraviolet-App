@@ -17,7 +17,8 @@ async function registerSW() {
   if (!navigator.serviceWorker) {
     if (
       location.protocol !== "https:" &&
-      !swAllowedHostnames.includes(location.hostname)
+      !swAllowedHostnames.includes(location.hostname) &&
+      !location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)
     )
       throw new Error("Service workers cannot be registered without https.");
 

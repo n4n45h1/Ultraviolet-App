@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no" />
+    <title>Mail - Sliply</title>
+    <meta name="description" content="一時メール受信ボックス" />
+    <link rel="shortcut icon" href="favicon.ico" />
+    <link rel="stylesheet" href="mail.css" />
+</head>
+<body>
+    <header class="header">
+        <a href="/" class="back-button" title="ホームに戻る">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </a>
+        <h1 class="logo">Mail</h1>
+        <button class="refresh-button" id="refresh-button" title="メールを更新">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </button>
+    </header>
+
+    <main class="mail-main">
+        <div class="mail-container">
+            <section class="mail-section">
+                <div class="email-header">
+                    <div class="email-display">
+                        <div class="email-icon">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="email-info">
+                            <div class="email-label">あなたのメールアドレス</div>
+                            <div class="email-address" id="email-address">生成中...</div>
+                        </div>
+                        <button class="copy-button" id="copy-email" title="コピー">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </button>
+                        <button class="new-email-button" id="new-email" title="新しいメールアドレスを生成">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 8v8M8 12h8" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="inbox-header">
+                    <h2 class="section-title">受信トレイ</h2>
+                    <div class="inbox-count" id="inbox-count">0 通</div>
+                </div>
+
+                <div class="mail-list" id="mail-list">
+                    <div class="empty-state">
+                        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="currentColor" stroke-width="2"/>
+                            <path d="M3 7l9 6 9-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        <p>メールがありません</p>
+                        <span>新しいメールが届くと、ここに表示されます</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <div class="modal" id="mail-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-subject">件名</h3>
+                <button class="modal-close" id="modal-close">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-meta">
+                <div class="meta-item">
+                    <span class="meta-label">送信元:</span>
+                    <span class="meta-value" id="modal-from"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">宛先:</span>
+                    <span class="meta-value" id="modal-to"></span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">日時:</span>
+                    <span class="meta-value" id="modal-date"></span>
+                </div>
+            </div>
+            <div class="modal-body" id="modal-body">
+                メール本文
+            </div>
+        </div>
+    </div>
+
+    <script src="mail.js"></script>
+</body>
+</html>
