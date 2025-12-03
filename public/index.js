@@ -155,36 +155,62 @@ function applySettings() {
 	}
 }
 
-const form = document.getElementById("uv-form");
-const address = document.getElementById("uv-address");
-const searchEngine = document.getElementById("uv-search-engine");
+function setupEventListeners() {
+	const form = document.getElementById("uv-form");
+	const address = document.getElementById("uv-address");
+	const searchEngine = document.getElementById("uv-search-engine");
 
-form.addEventListener("submit", async (event) => {
-	event.preventDefault();
-	
-	const error = document.getElementById("uv-error");
-	const errorCode = document.getElementById("uv-error-code");
-	
-	try {
-		const url = search(address.value, searchEngine.value);
-		await openProxyUrl(url);
-	} catch (err) {
-		console.error('Error:', err);
-		error.textContent = "エラーが発生しました。";
-		errorCode.textContent = err.toString();
+	if (form) {
+		form.addEventListener("submit", async (event) => {
+			event.preventDefault();
+			
+			const error = document.getElementById("uv-error");
+			const errorCode = document.getElementById("uv-error-code");
+			
+			try {
+				const url = search(address.value, searchEngine.value);
+				await openProxyUrl(url);
+			} catch (err) {
+				console.error('Error:', err);
+				error.textContent = "エラーが発生しました。";
+				errorCode.textContent = err.toString();
+			}
+			
+			return false;
+		});
 	}
-	
-	return false;
-});
 
-window.addEventListener('storage', (e) => {
-	if (e.key === 'sliply_title_update' || e.key === 'sliply_favicon_update') {
-		applySettings();
-	}
-	if (e.key === 'sliply_bookmarks_update' || e.key === 'sliply_bookmarks') {
-		loadQuickLinks();
-	}
-});
+	window.addEventListener('storage', (e) => {
+		if (e.key === 'sliply_title_update' || e.key === 'sliply_favicon_update') {
+			applySettings();
+		}
+		if (e.key === 'sliply_bookmarks_update' || e.key === 'sliply_bookmarks') {
+			loadQuickLinks();
+		}
+	});
+}
 
-applySettings();
-loadQuickLinks();
+if (typeof BareMux === 'undefined') {
+	console.warn('BareMux not loaded yet, waiting...');
+	let attempts = 0;
+	const checkBareMux = setInterval(() => {
+		attempts++;
+		if (typeof BareMux !== 'undefined') {
+			clearInterval(checkBareMux);
+			console.log('BareMux loaded successfully');
+			setupEventListeners();
+			applySettings();
+			loadQuickLinks();
+		} else if (attempts > 50) {
+			clearInterval(checkBareMux);
+			console.error('BareMux failed to load after 5 seconds');
+			setupEventListeners();
+			applySettings();
+			loadQuickLinks();
+		}
+	}, 100);
+} else {
+	setupEventListeners();
+	applySettings();
+	loadQuickLinks();
+}
