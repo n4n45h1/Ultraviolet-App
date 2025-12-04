@@ -33,6 +33,18 @@ Sliplyは[Ultraviolet](https://github.com/titaniumnetwork-dev/Ultraviolet)をベ
 [![Deploy to Railway](https://binbashbanana.github.io/deploy-buttons/buttons/remade/railway.svg)](https://railway.app/template/deploy)
 [![Deploy to Vercel](https://vercel.com/button)](https://vercel.com/new)
 
+### Koyebへのデプロイ
+
+1. [Koyeb](https://www.koyeb.com/)にサインアップ
+2. GitHubリポジトリを接続
+3. ビルドコマンド: `npm install`
+4. 起動コマンド: `npm run start:koyeb`
+5. ポート: `8080`
+6. 環境変数（オプション）:
+   - `ENABLE_MONITOR=true`: 死活監視を有効化（デフォルト: true）
+
+**死活監視機能**: Koyebでのスリープを防ぐため、5分ごとに自動的に`sliply.koyeb.app`にPingを送信します。
+
 サーバーやその他のサービスにデプロイする場合は、[ターミナルからのデプロイ](#ターミナルからのデプロイ)を参照してください。
 
 ## 📋 必要要件
@@ -68,6 +80,117 @@ npm start
 docker build -t sliply .
 docker run -p 8080:8080 sliply
 ```
+
+## 🔒 HTTPSセットアップ（推奨）
+
+Service WorkerはHTTPSまたはlocalhostでのみ動作します。本番環境ではHTTPSが必須です。
+
+### 方法1: Cloudflare Tunnel（最も簡単）
+
+1. Cloudflareアカウントを作成（無料）
+2. cloudflaredをインストール：
+```bash
+# Linux/Mac
+curl -L --output cloudflared.deb https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+sudo dpkg -i cloudflared.deb
+
+# または
+wget https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+chmod +x cloudflared-linux-amd64
+sudo mv cloudflared-linux-amd64 /usr/local/bin/cloudflared
+```
+
+3. トンネルを作成：
+```bash
+cloudflared tunnel --url http://localhost:8080
+```
+
+4. 表示されたHTTPS URL（例：`https://xxx.trycloudflare.com`）にアクセス
+
+### 方法2: Caddy（自動HTTPS）
+
+1. Caddyをインストール：
+```bash
+# Ubuntu/Debian
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https curl
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update
+sudo apt install caddy
+```
+
+2. Caddyfileを作成：
+```bash
+cat > Caddyfile <<EOF
+apps.tokyo {
+    reverse_proxy localhost:8080
+}
+EOF
+```
+
+3. SliplyとCaddyを起動：
+```bash
+npm start &
+sudo caddy run
+```
+
+### 方法3: Let's Encrypt + Nginx
+
+1. Certbotをインストール：
+```bash
+sudo apt update
+sudo apt install certbot python3-certbot-nginx nginx
+```
+
+2. 証明書を取得：
+```bash
+sudo certbot --nginx -d your-domain.com
+```
+
+3. Nginx設定（`/etc/nginx/sites-available/sliply`）：
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+
+    ssl_certificate /etc/letsencrypt/live/your-domain.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/your-domain.com/privkey.pem;
+
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 80;
+    server_name your-domain.com;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+4. 設定を有効化：
+```bash
+sudo ln -s /etc/nginx/sites-available/sliply /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### 方法4: 自己署名証明書（開発用）
+
+```bash
+# 証明書を生成
+openssl req -x509 -newkey rsa:4096 -keyout key.pem -out cert.pem -days 365 -nodes
+
+# Node.jsでHTTPSサーバーを起動
+node -e "const https=require('https'),fs=require('fs'),app=require('./src/index.js');https.createServer({key:fs.readFileSync('key.pem'),cert:fs.readFileSync('cert.pem')},app.server).listen(8443)"
+```
+
+**注意**: ブラウザで「安全でない」という警告が表示されますが、開発用途では無視できます。
 
 ## ⚙️ 設定
 

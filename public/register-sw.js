@@ -14,24 +14,40 @@ const swAllowedHostnames = ["localhost", "127.0.0.1"];
  * Used in 404.html and index.html
  */
 async function registerSW() {
+  console.log("Service Worker registration attempt:");
+  console.log("  - navigator.serviceWorker exists:", !!navigator.serviceWorker);
+  console.log("  - isSecureContext:", window.isSecureContext);
+  console.log("  - location.protocol:", location.protocol);
+  console.log("  - location.hostname:", location.hostname);
+  
   if (!navigator.serviceWorker) {
-    throw new Error("Your browser doesn't support service workers.");
+    const msg = "Your browser doesn't support service workers.";
+    console.error(msg);
+    throw new Error(msg);
   }
 
-  if (
-    location.protocol !== "https:" &&
-    !swAllowedHostnames.includes(location.hostname) &&
-    !location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/)
-  ) {
-    throw new Error("Service workers cannot be registered without https. Use localhost or an IP address.");
+  // Check if we're on a secure context or allowed hostname
+  const isLocalhost = swAllowedHostnames.includes(location.hostname);
+  const isIPAddress = location.hostname.match(/^\d+\.\d+\.\d+\.\d+$/);
+  const isSecure = location.protocol === "https:" || window.isSecureContext;
+
+  console.log("  - isLocalhost:", isLocalhost);
+  console.log("  - isIPAddress:", isIPAddress);
+  console.log("  - isSecure:", isSecure);
+
+  if (!isSecure && !isLocalhost && !isIPAddress) {
+    const msg = "Service workers require HTTPS, localhost, or IP address.";
+    console.error(msg);
+    throw new Error(msg);
   }
 
   try {
+    console.log("Attempting to register Service Worker at:", stockSW);
     const registration = await navigator.serviceWorker.register(stockSW);
-    console.log('Service Worker registered successfully:', registration);
+    console.log("✓ Service Worker registered successfully:", registration);
     return registration;
-  } catch (err) {
-    console.error('Service Worker registration failed:', err);
-    throw err;
+  } catch (error) {
+    console.error("✗ Service Worker registration failed:", error);
+    throw error;
   }
 }

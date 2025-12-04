@@ -6,6 +6,7 @@ import { dirname } from "node:path";
 import wisp from "wisp-server-node";
 import Fastify from "fastify";
 import fastifyStatic from "@fastify/static";
+import https from "node:https";
 
 // static paths
 import { publicPath } from "ultraviolet-static";
@@ -17,6 +18,26 @@ import { baremuxPath } from "@mercuryworkshop/bare-mux/node";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const customPublicPath = join(__dirname, "..", "public");
+
+// Koyeb死活監視 - 5分ごとにPingを送信してスリープを防止
+if (process.env.KOYEB_DEPLOYMENT || process.env.ENABLE_MONITOR === 'true') {
+	const MONITOR_URL = 'https://sliply.koyeb.app';
+	const PING_INTERVAL = 2 * 60 * 1000; // 5分
+	
+	const sendPing = () => {
+		const startTime = Date.now();
+		https.get(MONITOR_URL, (res) => {
+			const responseTime = Date.now() - startTime;
+			console.log(`[Monitor] Ping成功: ${MONITOR_URL} (${res.statusCode}) - ${responseTime}ms`);
+		}).on('error', (err) => {
+			console.error(`[Monitor] Pingエラー: ${err.message}`);
+		});
+	};
+	
+	console.log(`[Monitor] 死活監視開始: ${MONITOR_URL} (間隔: ${PING_INTERVAL / 1000}秒)`);
+	sendPing(); // 即座に1回実行
+	setInterval(sendPing, PING_INTERVAL); // 定期実行
+}
 
 const fastify = Fastify({
 	serverFactory: (handler) => {
